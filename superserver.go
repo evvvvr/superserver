@@ -28,7 +28,7 @@ func NewServicesList() *servicesList {
 	return &servicesList{services: make(map[int]struct{})}
 }
 
-func (services *servicesList) Add(pid int ) {
+func (services *servicesList) Add(pid int) {
 	services.lock.Lock()
 	services.services[pid] = struct{}{}
 	services.lock.Unlock()
