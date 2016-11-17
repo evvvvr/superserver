@@ -35,7 +35,7 @@ func (connection *NetworkConnection) StartReading() {
 				break
 			}
 
-			connection.output <- buff[:numBytesRead]
+			connection.output <- append(make([]byte, 0, numBytesRead), buff[:numBytesRead]...)
 		}
 
 		close(connection.output)

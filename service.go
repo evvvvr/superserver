@@ -165,7 +165,7 @@ func (service *Service) StartReading() {
 				break
 			}
 
-			service.output <- buff[:numBytesRead]
+			service.output <- append(make([]byte, 0, numBytesRead), buff[:numBytesRead]...)
 		}
 
 		close(service.output)
