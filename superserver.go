@@ -22,6 +22,7 @@ const (
 func main() {
 	configPath := flag.String("f", DefaultConfigPath, "Config file path")
 	terminationTimeout := flag.Duration("t", DefaultTerminationTimeout, "Child services termination timeout")
+	limit := flag.Uint("limit", 0, "Maximum number of concurrently running processes that can be started")
 	flag.Parse()
 
 	log.Printf("Reading config from file %s\n", *configPath)
@@ -35,7 +36,10 @@ func main() {
 		return
 	}
 
-	supervisor := NewSupervisor(*terminationTimeout)
+	supervisor := NewSupervisor(SupervisorConfig{
+		serviceTerminationTimeout: *terminationTimeout,
+		limit: *limit,
+	})
 	stopListening := make(chan struct{})
 	listenerGroup := errgroup.Group{}
 
@@ -57,7 +61,7 @@ func main() {
 	close(stopListening)
 	listenerGroup.Wait()
 
-	<-supervisor.Stop()
+	<-supervisor.Exit()
 	log.Printf("Stopped\n")
 }
 
@@ -96,7 +100,10 @@ func listen(supervisor *Supervisor, config serviceConfig, stopListening <-chan s
 
 		log.Printf("Connection has been accepted. Starting child service.\n")
 		go func() {
-			supervisor.RunService(conn, config)
+			if err := supervisor.StartService(conn, config); err != nil {
+				conn.Close()
+				log.Printf("Error starting service %s: %v\n", config.Name, err)
+			}
 		}()
 	}
 }

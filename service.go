@@ -69,7 +69,6 @@ func StartService(cfg serviceConfig) (*Service, error) {
 func (service *Service) Stop(timeout time.Duration) <-chan struct{} {
 	service.wasStopCalledLock.RLock()
 	if service.wasStopCalled {
-		log.Printf("service %s: already stopping", service.Name)
 		service.wasStopCalledLock.RUnlock()
 		return service.isStopped
 	}
@@ -79,7 +78,7 @@ func (service *Service) Stop(timeout time.Duration) <-chan struct{} {
 	service.wasStopCalled = true
 	service.wasStopCalledLock.Unlock()
 
-	log.Printf("service %s: stopping", service.Name)
+	log.Printf("service %s: stopping\n", service.Name)
 
 	go func() {
 		serviceExited := make(chan struct{})

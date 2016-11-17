@@ -6,9 +6,11 @@ and writes to socket from service's stdout.
 ##Command-line Options
 ```
 -f string
-        Config file path (default is superserver.toml)
+    Config file path (default is superserver.toml)
 -t duration
-        Child service termination timeout (default 3s)
+    Child service termination timeout (default 3s)
+-limit uint (default 0)
+    Maximum number of concurrently running processes that can be started. 0 for unlimited.
 ```
 
 ##Config File Syntax

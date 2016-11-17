@@ -1,24 +1,21 @@
 package main
 
 import (
-	"log"
 	"net"
 )
 
-const netReadSize = 65535
+const readSize = 65535
 
 type NetworkConnection struct {
-	conn      net.Conn
-	output    chan []byte
-	isStopped chan struct{}
+	conn   net.Conn
+	output chan []byte
 }
 
-func NewNetworkConnection(conn net.Conn) (*NetworkConnection, error) {
+func NewNetworkConnection(conn net.Conn) *NetworkConnection {
 	return &NetworkConnection{
-		conn:      conn,
-		output:    make(chan []byte),
-		isStopped: make(chan struct{}),
-	}, nil
+		conn:   conn,
+		output: make(chan []byte),
+	}
 }
 
 func (connection *NetworkConnection) Output() <-chan []byte {
@@ -27,7 +24,7 @@ func (connection *NetworkConnection) Output() <-chan []byte {
 
 func (connection *NetworkConnection) StartReading() {
 	go func() {
-		buff := make([]byte, netReadSize)
+		buff := make([]byte, readSize)
 
 		for {
 			numBytesRead, err := connection.conn.Read(buff)
@@ -45,16 +42,9 @@ func (connection *NetworkConnection) StartReading() {
 func (connection *NetworkConnection) Send(data []byte) bool {
 	_, err := connection.conn.Write(data)
 
-	if err != nil {
-		log.Printf("Error writing to network: %v\n", err)
-	}
-
 	return err == nil
 }
 
-func (connection *NetworkConnection) Stop() <-chan struct{} {
+func (connection *NetworkConnection) Close() {
 	connection.conn.Close()
-	close(connection.isStopped)
-
-	return connection.isStopped
 }
