@@ -35,6 +35,8 @@ Child services have empty environment.
 
 Killing child services doesn't kill processes started by them: superserver only kills its children, but not grandchildren.
 
+There's a known race condition when using service's IO streams and calling `cmd.Wait` — [os/exec: data race between StdinPipe and Wait] (https://github.com/golang/go/issues/9307).
+
 ##TODO
 * Better logging.
 * More inetd/xinetd-like config and command-line options.
