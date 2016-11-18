@@ -23,13 +23,16 @@ type superserver struct {
 	supervisor    *Supervisor
 }
 
-func (server *superserver) Start(config superserverConfig) {
-	server.stopListening = make(chan struct{})
-	server.listenerGroup = errgroup.Group{}
-	server.supervisor = NewSupervisor(SupervisorConfig{
+func StartSuperserver(config superserverConfig) *superserver {
+	supervisor := NewSupervisor(SupervisorConfig{
 		serviceTerminationTimeout: config.serviceTerminationTimeout,
 		limit: config.limit,
 	})
+	server := &superserver{
+		stopListening: make(chan struct{}),
+		listenerGroup: errgroup.Group{},
+		supervisor:    supervisor,
+	}
 
 	for _, cfg := range config.Services {
 		serviceConfig := cfg
@@ -39,6 +42,8 @@ func (server *superserver) Start(config superserverConfig) {
 			return nil
 		})
 	}
+
+	return server
 }
 
 func (server *superserver) Stop() {

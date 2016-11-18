@@ -24,8 +24,7 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	superserver := &superserver{}
-	superserver.Start(config)
+	superserver := StartSuperserver(config)
 	<-sigChan
 	log.Printf("Stopping...\n")
 	superserver.Stop()
