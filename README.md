@@ -25,7 +25,7 @@ program-args = ["service", "foo"] # arguments to be passed for service program, 
 ...
 ```
 
-##__SIGINT__, __SIGTERM__
+## __SIGINT__, __SIGTERM__
 Makes superserver stop accepting new connections, closes children stdin and if they
 didn't exit — send them ```SIGTERM``` and wait termination timeout for services to complete before
 killing them and exiting superserver.
@@ -37,7 +37,7 @@ Child services have empty environment.
 
 Killing child services doesn't kill processes started by them: superserver only kills its children, but not grandchildren.
 
-There's a known race condition when using service's IO streams and calling `cmd.Wait` — [os/exec: data race between StdinPipe and Wait] (https://github.com/golang/go/issues/9307).
+There's a known race condition when using service's IO streams and calling `cmd.Wait` — [os/exec: data race between StdinPipe and Wait](https://github.com/golang/go/issues/9307).
 
 ## TODO
 * Better logging.
